@@ -123,6 +123,6 @@ class TestE2E:
         compose_file = "docker-compose.pull-test.yml"
 
         with self.e2e_setup(compose_file, build=False) as container_name:
-            verify_inference(container_name, "qwen3:0.6b")
+            verify_inference(container_name, "tinyllama:1.1b")
 
             print("✅ E2E pull test passed successfully")

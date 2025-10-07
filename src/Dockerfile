@@ -5,7 +5,7 @@ ARG MODEL_NAME
 
 # Set environment variables
 ENV BUILT_IN_OLLAMA_MODEL=${MODEL_NAME}
-ENV OLLAMA_HOST=0.0.0.0
+# OLLAMA_HOST is set in entrypoint.sh
 
 # Install curl, which is used for healthcheck polling.
 USER root
