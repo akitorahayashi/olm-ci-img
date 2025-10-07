@@ -9,6 +9,6 @@
     }
   },
   "latest": {
-    "alias": "qwen3"
+    "alias": "tinyllama"
   }
 }

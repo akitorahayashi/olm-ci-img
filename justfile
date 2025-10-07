@@ -50,7 +50,7 @@ unit-test:
 # Run end-to-end tests only
 e2e-test:
     @echo "Running pytest end-to-end tests..."
-    uv run pytest tests/e2e/
+    uv run pytest tests/test_e2e.py
 
 
 # ==============================================================================

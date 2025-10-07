@@ -1,16 +1,20 @@
 import subprocess
 import time
 import uuid
+import json
 
 import pytest
 
-# Hardcoded model for testing: tinyllama:1.1b v1 only
-MODELS = {"tinyllama": {"name": "tinyllama:1.1b", "versions": ["v1"]}}
+# Read src/models.json and dynamically generate test targets.
+def load_models_from_config():
+    with open("src/models.json") as f:
+        config = json.load(f)
+    # Returns a list of model names (e.g., "tinyllama:1.1b") from each entry in config["models"].
+    return [model["name"] for model in config["models"].values()]
 
 
-@pytest.mark.parametrize("model_name", MODELS.values())
-def test_docker_image_for_single_model(model_name):
-    model_full_name = model_name["name"]
+@pytest.mark.parametrize("model_full_name", load_models_from_config())
+def test_docker_image_for_single_model(model_full_name, verify_inference):
     image_tag = f"test/ollama-ci:{model_full_name.replace(':', '-')}-v1-test"
     container_name = (
         f"test-container-{model_full_name.replace(':', '-')}-v1-{uuid.uuid4().hex[:4]}"
@@ -96,6 +100,8 @@ def test_docker_image_for_single_model(model_name):
         )
         if result.returncode != 0:
             pytest.fail("API call failed")
+
+        verify_inference(container_name, model_full_name)
 
     finally:
         # Cleanup
