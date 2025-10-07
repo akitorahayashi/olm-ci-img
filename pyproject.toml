@@ -1,0 +1,65 @@
+[project]
+name = "ollama-ci-img"
+version = "0.1.0"
+description = "Automated pipeline for building and publishing Ollama-based Docker images."
+authors = [{ name = "akitorahayashi" }]
+requires-python = ">=3.11,<4.0"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "black>=25.1.0",
+    "ruff>=0.12.10",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+python_files = "test_*.py"
+testpaths = ["."]
+addopts = "-v -s --tb=short"
+
+[tool.black]
+target-version = ['py311']
+exclude = '''
+/(
+    \.git
+    | \.mypy_cache
+    | \.venv
+    | \.uv-cache
+    | venv
+    | env
+    | build
+    | dist
+    | .*/(bin|lib|share|etc)
+    | .*/pyvenv\.cfg
+)/
+'''
+
+[tool.ruff]
+target-version = "py311"
+exclude = [
+	"__pycache__",
+	"migrations",
+	"db.sqlite3",
+  ".uv-cache",
+	"*.pyc",
+	".venv",
+	"venv",
+	"env",
+	"*/bin/**",
+	"*/lib/**",
+	"*/share/**",
+	"*/etc/**",
+	"*/pyvenv.cfg"
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]

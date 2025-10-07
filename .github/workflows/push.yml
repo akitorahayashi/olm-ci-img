@@ -1,0 +1,74 @@
+name: Push Docker Registries
+
+on:
+  workflow_call:
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - id: set-matrix
+        name: Generate build matrix
+        run: |
+          MATRIX=$(jq -c '[
+            .latest_version as $latest_version |
+            .models as $models |
+            ($models | to_entries[] | .key as $alias | .value | .name as $name | $latest_version as $v | {
+              "model_alias": $alias,
+              "model_name": $name,
+              "image_version": $v,
+              "tag_suffix": ($alias + "-" + $v)
+            }) , {
+              "model_alias": .latest.alias,
+              "model_name": $models[.latest.alias].name,
+              "image_version": $latest_version,
+              "tag_suffix": "latest"
+            }
+          ]' src/models.json)
+          echo "matrix={\"include\":$MATRIX}" >> "$GITHUB_OUTPUT"
+
+  build-and-push:
+    needs: generate-matrix
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false 
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set lowercase repository owner
+        id: repo-owner
+        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: src
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/${{ steps.repo-owner.outputs.owner }}/olm-ci-img:${{ matrix.tag_suffix }}
+          build-args: |
+            MODEL_NAME=${{ matrix.model_name }}
+            IMAGE_VERSION=${{ matrix.image_version }}

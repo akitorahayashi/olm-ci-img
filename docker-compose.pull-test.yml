@@ -1,0 +1,9 @@
+services:
+  ollama-pull-test:
+    image: ghcr.io/astra-teams/olm-ci-img:latest
+    container_name: ollama-pull-test-container
+    volumes:
+      - olm-ci-pull-test-data:/root/.ollama
+
+volumes:
+  olm-ci-pull-test-data:

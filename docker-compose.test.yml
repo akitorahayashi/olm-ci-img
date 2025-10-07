@@ -1,0 +1,13 @@
+services:
+  ollama-test:
+    build:
+      context: ./src
+      args:
+        MODEL_NAME: tinyllama:1.1b
+    image: test/olm-ci-img:tinyllama-test
+    container_name: ollama-test-container
+    volumes:
+      - olm-ci-test-data:/root/.ollama
+
+volumes:
+  olm-ci-test-data:
