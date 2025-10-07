@@ -1,5 +1,6 @@
-import subprocess
 import json
+import subprocess
+
 import pytest
 
 
@@ -16,11 +17,13 @@ def verify_inference():
                 "-s",
                 "http://localhost:11434/api/generate",
                 "-d",
-                json.dumps({
-                    "model": model_name,
-                    "prompt": "Why is the sky blue?",
-                    "stream": False
-                })
+                json.dumps(
+                    {
+                        "model": model_name,
+                        "prompt": "Why is the sky blue?",
+                        "stream": False,
+                    }
+                ),
             ],
             capture_output=True,
             text=True,
@@ -42,4 +45,5 @@ def verify_inference():
                 f"Inference response is invalid for model {model_name}.\n"
                 f"Stdout: {inference_result.stdout}"
             )
+
     return _verify

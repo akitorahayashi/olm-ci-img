@@ -1,6 +1,7 @@
+import contextlib
 import subprocess
 import time
-import contextlib
+
 import pytest
 
 
@@ -10,7 +11,7 @@ class TestE2E:
     def e2e_setup(cls, compose_file, build=False):
         container_name = {
             "docker-compose.test.yml": "ollama-test-container",
-            "docker-compose.pull-test.yml": "ollama-pull-test-container"
+            "docker-compose.pull-test.yml": "ollama-pull-test-container",
         }.get(compose_file, "unknown-container")
 
         try:

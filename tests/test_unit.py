@@ -1,9 +1,10 @@
+import json
 import subprocess
 import time
 import uuid
-import json
 
 import pytest
+
 
 # Read src/models.json and dynamically generate test targets.
 def load_models_from_config():
