@@ -6,6 +6,9 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [unit, e2e]
     env:
       UV_CACHE_DIR: "./.uv-cache"
     steps:
@@ -26,5 +29,5 @@ jobs:
       - name: Install just
         uses: extractions/setup-just@v2
 
-      - name: Run local tests
-        run: just test
+      - name: Run tests
+        run: just ${{ matrix.test-type }}-test
