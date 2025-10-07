@@ -12,7 +12,7 @@ Ollama model images for CI workflows.
   ```yaml
   jobs:
     push-images:
-      uses: Astra-Teams/olm-ci-img/.github/workflows/push.yml@main
+      uses: akitorahayashi/olm-ci-img/.github/workflows/push.yml@main
   ```
 
 ## Updating models
